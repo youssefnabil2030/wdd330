@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    h1 {
+      text-align: center;
+    }
+    input, textarea, button, select {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #f9f9f9;
+      padding: 10px;
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 5px;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .buttons button {
+      margin-left: 5px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Task Manager</h1>
+    <input type="text" id="taskTitle" placeholder="Task title">
+    <textarea id="taskDesc" placeholder="Task description"></textarea>
+    <input type="date" id="taskDeadline">
+    <button onclick="addTask()">Add Task</button>
+
+    <select id="filter" onchange="filterTasks()">
+      <option value="all">All</option>
+      <option value="completed">Completed</option>
+      <option value="pending">Pending</option>
+    </select>
+
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+      const filter = document.getElementById("filter").value;
+
+      tasks.forEach((task, index) => {
+        if (filter === "completed" && !task.completed) return;
+        if (filter === "pending" && task.completed) return;
+
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span class="${task.completed ? "completed" : ""}">
+            <strong>${task.title}</strong> - ${task.desc} (Due: ${task.deadline})
+          </span>
+          <div class="buttons">
+            <button onclick="toggleComplete(${index})">${task.completed ? "Undo" : "Done"}</button>
+            <button onclick="deleteTask(${index})">Delete</button>
+          </div>
+        `;
+        taskList.appendChild(li);
+      });
+    }
+
+    function addTask() {
+      const title = document.getElementById("taskTitle").value;
+      const desc = document.getElementById("taskDesc").value;
+      const deadline = document.getElementById("taskDeadline").value;
+
+      if (!title) return alert("Task title is required!");
+
+      tasks.push({ title, desc, deadline, completed: false });
+      saveTasks();
+      renderTasks();
+
+      document.getElementById("taskTitle").value = "";
+      document.getElementById("taskDesc").value = "";
+      document.getElementById("taskDeadline").value = "";
+    }
+
+    function toggleComplete(index) {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasks();
+      renderTasks();
+    }
+
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasks();
+      renderTasks();
+    }
+
+    function filterTasks() {
+      renderTasks();
+    }
+
+    renderTasks();
+  </script>
+</body>
+</html>

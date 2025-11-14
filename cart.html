@@ -10,8 +10,15 @@
       background: #eef2f3;
       margin: 0;
       padding: 20px;
+      background: linear-gradient(135deg, #ff9966, #ff5e62, #6a11cb, #2575fc);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
     }
-
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
     .container {
       max-width: 700px;
       margin: auto;
@@ -201,3 +208,4 @@
   </script>
 </body>
 </html>
+
